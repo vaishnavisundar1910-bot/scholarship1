@@ -1,0 +1,81 @@
+// Firebase Configuration (Sample)
+const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "your-app.firebaseapp.com",
+    projectId: "your-app-id",
+    // ... matha details
+};
+
+// Initialize Firebase
+// firebase.initializeApp(firebaseConfig); 
+
+// --- 1. Login Logic ---
+const loginBtn = document.getElementById('firebase-login-placeholder');
+loginBtn.innerHTML = `<button class="btn btn-outline-dark" id="google-login">Login with Google</button>`;
+
+document.getElementById('google-login').onclick = () => {
+    // Google Login Logic Inga Varum
+    alert("Google Login triggered! (Firebase connect panna work aagum)");
+    // Login aana udane user details-a form-la fill panna:
+    autoFillUserProfile(); 
+};
+
+// --- 2. Auto-Fill Function ---
+function autoFillUserProfile() {
+    // Ithu user login panna avanga details-a auto-vaa fill pannum
+    document.getElementById('gender').value = "male"; 
+    document.getElementById('state').value = "Tamil Nadu";
+    document.getElementById('income').value = "150000";
+    document.getElementById('community').value = "BC";
+    console.log("Profile auto-filled from database!");
+}
+
+// --- 3. Scholarship Data Array ---
+const scholarships = [
+    { name: "BC/MBC Post-Matric Scholarship", gender: "male", maxIncome: 200000, state: "Tamil Nadu", link: "https://instat.tn.gov.in/" },
+    { name: "Sitaram Jindal Foundation", gender: "female", maxIncome: 400000, state: "All India", link: "https://www.sitaramjindalfoundation.org/" },
+    { name: "HDFC Badhte Kadam", gender: "all", maxIncome: 600000, state: "All India", link: "#" },
+    { name: "Kotak Kanya Scholarship", gender: "female", maxIncome: 320000, state: "All India", link: "#" }
+];
+
+// --- 4. Search & Filter Logic ---
+document.getElementById('scholarship-form').onsubmit = (e) => {
+    e.preventDefault();
+    
+    const income = parseInt(document.getElementById('income').value);
+    const gender = document.getElementById('gender').value;
+    const state = document.getElementById('state').value.toLowerCase();
+
+    const eligible = scholarships.filter(s => {
+        return (s.gender === "all" || s.gender === gender) && 
+               (income <= s.maxIncome) && 
+               (s.state.toLowerCase() === "all india" || s.state.toLowerCase() === state);
+    });
+
+    renderResults(eligible);
+};
+
+// --- 5. UI Rendering ---
+function renderResults(list) {
+    const container = document.getElementById('eligible-scholarships-container');
+    container.innerHTML = ""; 
+
+    if(list.length === 0) {
+        container.innerHTML = `<div class="alert alert-warning w-100 text-center">Sorry, no matching scholarships found!</div>`;
+        return;
+    }
+
+    list.forEach(s => {
+        container.innerHTML += `
+            <div class="col">
+                <div class="card h-100 border-primary">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">${s.name}</h5>
+                        <p>Income: Below ₹${s.maxIncome}</p>
+                        <a href="${s.link}" target="_blank" class="btn btn-success btn-sm">Apply via Portal</a>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+}
